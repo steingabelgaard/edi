@@ -267,7 +267,7 @@ class AccountInvoiceImportSimplePdfFields(models.Model):
                 date_raw, date_formats=[date_formatdt], languages=languages
             )
             if date_dt:
-                valid_dates_dt.append(date_dt)
+                valid_dates_dt.append(date_dt.date())
             else:
                 logger.debug(
                     "Failed to parse date %s using format %s and language %s",

@@ -351,18 +351,18 @@ class TestInvoiceImport(TransactionCase):
         )
         wiz.import_invoice()
         # Check result of invoice creation
-        invoices = self.env["account.move"].search(
+        invoices = self.env["account.invoice"].search(
             [
                 ("partner_id", "=", self.demo_partner.id),
                 ("state", "=", "draft"),
-                ("move_type", "=", "in_invoice"),
-                ("ref", "=", "11608848301659"),
+                ("type", "=", "in_invoice"),
+                ("reference", "=", "11608848301659"),
             ]
         )
         inv_config = self.env.ref("%s.bouygues_telecom_import_config" % self.module)
         self.assertEqual(len(invoices), 1)
         inv = invoices[0]
-        self.assertEqual(fields.Date.to_string(inv.invoice_date), "2019-11-02")
+        self.assertEqual(fields.Date.to_string(inv.date_invoice), "2019-11-02")
         self.assertEqual(inv.journal_id.type, "purchase")
         self.assertEqual(inv.currency_id, self.env.ref("base.EUR"))
         self.assertFalse(inv.currency_id.compare_amounts(inv.amount_total, 12.99))
@@ -371,7 +371,7 @@ class TestInvoiceImport(TransactionCase):
         iline = inv.invoice_line_ids[0]
         self.assertEqual(iline.name, inv_config.label)
         self.assertEqual(iline.product_id, self.product)
-        self.assertEqual(iline.tax_ids, self.product.supplier_taxes_id)
+        self.assertEqual(iline.invoice_line_tax_ids, self.product.supplier_taxes_id)
         self.assertEqual(float_compare(iline.quantity, 1.0, precision_digits=2), 0)
         self.assertEqual(float_compare(iline.price_unit, 10.83, precision_digits=2), 0)
         inv.unlink()
