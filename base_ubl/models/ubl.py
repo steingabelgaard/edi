@@ -376,7 +376,8 @@ class BaseUbl(models.AbstractModel):
             else:
                 taxes = product.supplier_taxes_id
             if taxes:
-                for tax in taxes:
+                for tax in taxes.filtered(
+                        lambda t: t.company_id == self.env.user.company_id):
                     self._ubl_add_tax_category(
                         tax, item, ns, node_name='ClassifiedTaxCategory',
                         version=version)
@@ -395,6 +396,7 @@ class BaseUbl(models.AbstractModel):
             self, taxable_amount, tax_amount, tax, currency_code,
             parent_node, ns, version='2.1'):
         prec = self.env['decimal.precision'].precision_get('Account')
+        prec = prec if prec <= 2 else 2
         tax_subtotal = etree.SubElement(parent_node, ns['cac'] + 'TaxSubtotal')
         if not float_is_zero(taxable_amount, precision_digits=prec):
             taxable_amount_node = etree.SubElement(

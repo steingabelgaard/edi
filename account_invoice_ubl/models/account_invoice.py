@@ -73,16 +73,17 @@ class AccountInvoice(models.Model):
         if (
                 self.company_id.embed_pdf_in_ubl_xml_invoice and
                 not self._context.get('no_embedded_pdf')):
+            filename = 'Invoice-' + self.number + '.pdf'
             docu_reference = etree.SubElement(
                 parent_node, ns['cac'] + 'AdditionalDocumentReference')
             docu_reference_id = etree.SubElement(
                 docu_reference, ns['cbc'] + 'ID')
-            docu_reference_id.text = 'Invoice-' + self.number + '.pdf'
+            docu_reference_id.text = filename
             attach_node = etree.SubElement(
                 docu_reference, ns['cac'] + 'Attachment')
             binary_node = etree.SubElement(
                 attach_node, ns['cbc'] + 'EmbeddedDocumentBinaryObject',
-                mimeCode="application/pdf")
+                mimeCode="application/pdf", filename=filename)
             ctx = dict()
             ctx['no_embedded_ubl_xml'] = True
             pdf_inv = self.with_context(ctx).env.ref(
@@ -95,6 +96,7 @@ class AccountInvoice(models.Model):
             parent_node, ns['cac'] + 'LegalMonetaryTotal')
         cur_name = self.currency_id.name
         prec = self.currency_id.decimal_places
+        prec = prec if prec <= 2 else 2
         line_total = etree.SubElement(
             monetary_total, ns['cbc'] + 'LineExtensionAmount',
             currencyID=cur_name)
@@ -126,7 +128,9 @@ class AccountInvoice(models.Model):
         dpo = self.env['decimal.precision']
         qty_precision = dpo.precision_get('Product Unit of Measure')
         price_precision = dpo.precision_get('Product Price')
+        price_precision = price_precision if price_precision <= 2 else 2
         account_precision = self.currency_id.decimal_places
+        account_precision = account_precision if account_precision <= 2 else 2
         line_id = etree.SubElement(line_root, ns['cbc'] + 'ID')
         line_id.text = str(line_number)
         uom_unece_code = False
@@ -174,6 +178,7 @@ class AccountInvoice(models.Model):
             self, iline, parent_node, ns, version='2.1'):
         cur_name = self.currency_id.name
         prec = self.currency_id.decimal_places
+        prec = prec if prec <= 2 else 2
         tax_total_node = etree.SubElement(parent_node, ns['cac'] + 'TaxTotal')
         price = iline.price_unit * (1 - (iline.discount or 0.0) / 100.0)
         res_taxes = iline.invoice_line_tax_ids.compute_all(
@@ -200,6 +205,7 @@ class AccountInvoice(models.Model):
         tax_amount_node = etree.SubElement(
             tax_total_node, ns['cbc'] + 'TaxAmount', currencyID=cur_name)
         prec = self.currency_id.decimal_places
+        prec = prec if prec <= 2 else 2
         tax_amount_node.text = '%0.*f' % (prec, self.amount_tax)
         if not float_is_zero(self.amount_tax, precision_digits=prec):
             for tline in self.tax_line_ids:
