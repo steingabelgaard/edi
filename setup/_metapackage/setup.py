@@ -21,6 +21,7 @@ setuptools.setup(
         'odoo12-addon-account_invoice_ubl_email_attachment',
         'odoo12-addon-base_business_document_import',
         'odoo12-addon-base_business_document_import_phone',
+        'odoo12-addon-base_business_document_import_stock',
         'odoo12-addon-base_edi',
         'odoo12-addon-base_facturx',
         'odoo12-addon-base_ubl',
@@ -33,5 +34,6 @@ setuptools.setup(
     classifiers=[
         'Programming Language :: Python',
         'Framework :: Odoo',
+        'Framework :: Odoo :: 12.0',
     ]
 )
