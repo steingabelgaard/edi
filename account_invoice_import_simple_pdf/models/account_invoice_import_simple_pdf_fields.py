@@ -341,6 +341,8 @@ class AccountInvoiceImportSimplePdfFields(models.Model):
         res_regex = regex.findall(pattern, restrict_text_filtered)
         valid_amounts = []
         for amount_raw in res_regex:
+            if amount_raw[0] == '$':
+                amount_raw = amount_raw[1:]
             if thousand_sep_pattern:
                 amount_raw = regex.sub(thousand_sep_pattern, "", amount_raw)
             if decimal_places:
