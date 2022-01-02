@@ -345,7 +345,7 @@ class AccountInvoiceImportSimplePdfFields(models.Model):
                 amount_raw = amount_raw[1:]
             if thousand_sep_pattern:
                 amount_raw = regex.sub(thousand_sep_pattern, "", amount_raw)
-            if decimal_places:
+            if decimal_places and "." not in amount_raw:
                 amount_raw_list = list(amount_raw)
                 amount_raw_list[-decimal_places - 1] = "."
                 amount_raw = "".join(amount_raw_list)
