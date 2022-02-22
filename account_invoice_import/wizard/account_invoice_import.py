@@ -937,7 +937,7 @@ class AccountInvoiceImport(models.TransientModel):
                 il_vals['name'] = _('MISSING DESCRIPTION')
             self.set_1line_price_unit_and_quantity(il_vals, parsed_inv)
             self.set_1line_start_end_dates(il_vals, parsed_inv)
-            vals['invoice_line_ids'].append((0, 0, il_vals))
+            vals['invoice_line_ids'] = [(0, 0, il_vals)]
             logger.info("Adding invoice line: %s", il_vals)
         logger.info('Updating supplier invoice with vals=%s', vals)
         self.invoice_id.write(vals)
