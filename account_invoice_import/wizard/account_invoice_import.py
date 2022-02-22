@@ -883,6 +883,7 @@ class AccountInvoiceImport(models.TransientModel):
         self.ensure_one()
         iaao = self.env['ir.actions.act_window']
         bdio = self.env['business.document.import']
+        ailo = self.env['account.invoice.line']
         invoice = self.invoice_id
         if not invoice:
             raise UserError(_("You must select a supplier invoice or refund to update"))
