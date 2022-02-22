@@ -941,6 +941,7 @@ class AccountInvoiceImport(models.TransientModel):
             logger.info("Adding invoice line: %s", il_vals)
         logger.info('Updating supplier invoice with vals=%s', vals)
         self.invoice_id.write(vals)
+        self.invoice_id.compute_taxes()
         if (
                 parsed_inv.get('lines') and
                 import_config['invoice_line_method'] == 'nline_auto_product'):
