@@ -341,6 +341,7 @@ class AccountInvoiceImportSimplePdfFields(models.Model):
         res_regex = regex.findall(pattern, restrict_text_filtered)
         valid_amounts = []
         for amount_raw in res_regex:
+            logger.info('Trying 1: %s', amount_raw)
             if amount_raw[0] == '$':
                 amount_raw = amount_raw[1:]
             if thousand_sep_pattern:
@@ -350,9 +351,10 @@ class AccountInvoiceImportSimplePdfFields(models.Model):
                 amount_raw_list[-decimal_places - 1] = "."
                 amount_raw = "".join(amount_raw_list)
             try:
+                logger.info('Trying 2: %s', amount_raw)
                 valid_amounts.append(float(amount_raw))
             except ValueError:
-                logger.debug("%s is an invalid float", amount_raw)
+                logger.info("%s is an invalid float", amount_raw)
         test_info[self.name].update(
             {
                 "res_regex": res_regex,
