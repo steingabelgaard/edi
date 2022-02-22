@@ -915,7 +915,7 @@ class AccountInvoiceImport(models.TransientModel):
         if not self.invoice_id.invoice_line_ids and import_config['invoice_line_method'].startswith('1line'):
             if import_config['invoice_line_method'] == '1line_no_product':
                 if import_config['taxes']:
-                    invoice_line_tax_ids = [(6, 0, config['taxes'].ids)]
+                    invoice_line_tax_ids = [(6, 0, import_config['taxes'].ids)]
                 else:
                     invoice_line_tax_ids = False
                 il_vals = {
