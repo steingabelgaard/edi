@@ -912,7 +912,33 @@ class AccountInvoiceImport(models.TransientModel):
                 "the currency of the existing invoice (%s)") % (
                 currency.name, invoice.currency_id.name))
         vals = self._prepare_update_invoice_vals(parsed_inv, invoice)
-        logger.debug('Updating supplier invoice with vals=%s', vals)
+        if not self.invoice_id.invoice_line_ids and import_config['invoice_line_method'].startswith('1line'):
+            if import_config['invoice_line_method'] == '1line_no_product':
+                if import_config['taxes']:
+                    invoice_line_tax_ids = [(6, 0, config['taxes'].ids)]
+                else:
+                    invoice_line_tax_ids = False
+                il_vals = {
+                    'account_id': import_config['account'].id,
+                    'invoice_line_tax_ids': invoice_line_tax_ids,
+                    'price_unit': parsed_inv.get('amount_untaxed'),
+                    }
+            elif import_config['invoice_line_method'] == '1line_static_product':
+                product = import_config['product']
+                il_vals = {'product_id': product.id, 'invoice_id': vals}
+                il_vals = ailo.play_onchanges(il_vals, ['product_id'])
+                il_vals.pop('invoice_id')
+            if import_config.get('label'):
+                il_vals['name'] = import_config['label']
+            elif parsed_inv.get('description'):
+                il_vals['name'] = parsed_inv['description']
+            elif not il_vals.get('name'):
+                il_vals['name'] = _('MISSING DESCRIPTION')
+            self.set_1line_price_unit_and_quantity(il_vals, parsed_inv)
+            self.set_1line_start_end_dates(il_vals, parsed_inv)
+            vals['invoice_line_ids'].append((0, 0, il_vals))
+            logger.info("Adding invoice line: %s", il_vals)
+        logger.info('Updating supplier invoice with vals=%s', vals)
         self.invoice_id.write(vals)
         if (
                 parsed_inv.get('lines') and
