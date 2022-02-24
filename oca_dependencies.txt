@@ -1,6 +1,6 @@
 partner-contact
 community-data-files
-server-tools
+server-tools https://github.com/steingabelgaard/server-tools
 bank-payment
 sale-workflow
 connector-telephony
