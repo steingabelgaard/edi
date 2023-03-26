@@ -1,2 +1,1 @@
 odoo-test-helper>=2.0.1
-odoo-addon-pdf_helper @ git+https://github.com/OCA/edi@refs/pull/736/head#subdirectory=setup/pdf_helper
